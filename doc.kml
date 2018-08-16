@@ -43,14 +43,8 @@
     <Placemark>
       <name>colombo ward</name>
 	  <description>This is colombo ward</description>
-	  <ExtendedData>
-      <Data name="wardId">
-        <value>1</value>
-      </Data>
-      <Data name="WardOwner">
-        <value>Dulya</value>
-      </Data>
-    </ExtendedData>
+	  <wardid>1</wardid>
+	  
       <styleUrl>#poly-000000-1200-77-nodesc</styleUrl>
       <Polygon>
         <outerBoundaryIs>

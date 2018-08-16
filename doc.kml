@@ -42,9 +42,7 @@
     </StyleMap>
     <Placemark>
       <name>colombo ward</name>
-	  <description>This is colombo ward</description>
-	  <wardid>1</wardid>
-	  
+	  <description>This is colombo ward</description> 
       <styleUrl>#poly-000000-1200-77-nodesc</styleUrl>
       <Polygon>
         <outerBoundaryIs>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>wards</name>
+    <Style id="poly-000000-1200-77-nodesc-normal">
+      <LineStyle>
+        <color>ff000000</color>
+        <width>1.2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>4d000000</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="poly-000000-1200-77-nodesc-highlight">
+      <LineStyle>
+        <color>ff000000</color>
+        <width>1.8</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>4d000000</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="poly-000000-1200-77-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#poly-000000-1200-77-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#poly-000000-1200-77-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>colombo ward</name>
+	  <description>This is colombo ward</description>
+	  <ExtendedData>
+      <Data name="wardId">
+        <value>1</value>
+      </Data>
+      <Data name="WardOwner">
+        <value>Dulya</value>
+      </Data>
+    </ExtendedData>
+      <styleUrl>#poly-000000-1200-77-nodesc</styleUrl>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              79.8701665,6.9661429,0
+              79.8454473,6.9484215,0
+              79.8269078,6.9409239,0
+              79.8399541,6.9286547,0
+              79.8516271,6.8993436,0
+              79.8626134,6.8652587,0
+              79.8687932,6.8236719,0
+              79.9051854,6.8202629,0
+              79.9381444,6.8379891,0
+              79.9443242,6.8972986,0
+              79.9353978,6.9306995,0
+              79.907932,6.9504663,0
+              79.8701665,6.9661429,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Kotte Ward</name>
+	   <description>This is kotte ward</description>
+      <styleUrl>#poly-000000-1200-77-nodesc</styleUrl>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              79.9710306,6.9368133,0
+              79.9518045,6.9088661,0
+              79.9443242,6.8972986,0
+              79.9381444,6.8379891,0
+              79.9662241,6.8113788,0
+              80.0177225,6.8072879,0
+              80.0321421,6.8516032,0
+              80.0287088,6.9006861,0
+              80.0005564,6.9299971,0
+              79.9710306,6.9368133,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>

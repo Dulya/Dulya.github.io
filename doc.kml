@@ -41,7 +41,7 @@
       </Pair>
     </StyleMap>
     <Placemark>
-      <name>colombo ward</name>
+      <name>colombo_ward</name>
 	  <description>This is colombo ward</description> 
       <styleUrl>#poly-000000-1200-77-nodesc</styleUrl>
       <Polygon>
@@ -68,7 +68,7 @@
       </Polygon>
     </Placemark>
     <Placemark>
-      <name>Kotte Ward</name>
+      <name>kotte_ward</name>
 	   <description>This is kotte ward</description>
       <styleUrl>#poly-000000-1200-77-nodesc</styleUrl>
       <Polygon>

@@ -86,6 +86,7 @@
 	<script src="js/three.js"></script>
 	<script src="js/controls/OrbitControls.js"></script>
 	<script src="js/renderers/CSS3DRenderer.js"></script>
+	<script src="js/renderers/CSS2DRenderer.js"></script>
 	<script src="js/libs/stats.min.js"></script>
 	<script src="js/libs/tween.min.js"></script>
 	<script src="js/libs/lodash.js"></script>
@@ -310,7 +311,7 @@
 		var dynamicMapGroup = new THREE.Group();
 		var staticMapGroup = new THREE.Group();
 		var staticMap;
-		var webGLRenderer, dynamicMapRenderer, canvasRenderer;
+		var webGLRenderer, dynamicMapRenderer, canvasRenderer, labelRenderer;
 		var controlls;
 		var isCarouselSelected = false;
 		var isCasaroul = false;
@@ -422,6 +423,15 @@
 				google.maps.event.addListener(polygon, 'click', function (event) {
 					console.log("BID", polygon.indexID);
 					loadDataset(polygon, initScene);
+
+
+
+					labelRenderer = new THREE.CSS2DRenderer();
+					labelRenderer.setSize( window.innerWidth, window.innerHeight );
+					labelRenderer.domElement.style.position = 'absolute';
+					labelRenderer.domElement.style.top = 0;
+					first_stage_container.appendChild( labelRenderer.domElement );
+					//document.body.appendChild( labelRenderer.domElement );
 				});
 			};
 
@@ -505,7 +515,6 @@
 			scene.add(camera);
 
 			//renderers
-
 
 			dynamicMapRenderer = new THREE.CSS3DRenderer();
 			dynamicMapRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -603,6 +612,10 @@
 				}
 
 			}
+			if(labelRenderer){
+				labelRenderer.render( scene, camera );
+			}
+			
 			webGLRenderer.render(scene, camera);
 			canvasRenderer.render(scene, camera);
 		}

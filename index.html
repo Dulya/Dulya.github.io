@@ -100,6 +100,7 @@
 	<script src="js/DataExplorer.js"></script>
 	<script src="js/geoxml3.js"></script>
 	<script src="js/encode.js"></script>
+	<script src="js/PlanetoMap.js"></script>
 	<!-- read data from csv-->
 	<script src="https://d3js.org/d3-collection.v1.min.js"></script>
 	<script src="https://d3js.org/d3-dispatch.v1.min.js"></script>
@@ -232,7 +233,8 @@
 		var nonDimensionalFields = ["caseid", "boundaryid", "lat", "lon"];
 		function loadDataset(polygon, callback) {
 			console.log("loading dataset...");
-			d3.csv("dataset/data.csv", function (data) {
+			d3.csv("dataset/data_full.csv", function (data) {
+				
 				//select cases according to the given boundary
 				dataset = data.filter(function (report) {
 					var bid = 0;
@@ -311,11 +313,17 @@
 		var dynamicMapGroup = new THREE.Group();
 		var staticMapGroup = new THREE.Group();
 		var staticMap;
+		var centerCords = new THREE.Vector2();
+		var PLANE_SIZE = 2000;
+		var MAP_SIZE = 512;
+		var ZOOM = 14.5;
+		
 		var webGLRenderer, dynamicMapRenderer, canvasRenderer, labelRenderer;
 		var controlls;
 		var isCarouselSelected = false;
 		var isCasaroul = false;
 		var parent;
+		var cone; //main metaphor moving object
 		var clickedSlice;
 		var dataExplorer;
 		var dataVisualizer;
@@ -327,9 +335,8 @@
 		var wards = [];
 
 		// instantiate a loader
-
+		
 		function initScene(polygon) {
-
 			showMap = false;
 			var x = document.getElementById("googleMap");
 			x.style.display = "none";
@@ -359,12 +366,19 @@
 
 			infowindow.open(map, marker);
 
+			switchScene(polygon);
+			//load human avatar
+			//loadAvatar(scene,dataset.length*ratio);
+			console.log("Scene initialization completed!")
+		}
+		function switchScene(polygon){
 			var loader = new THREE.TextureLoader();
 			var coordinateIterator;
 
 			var points = [];
 			var latCords = [];
 			var lngCords = [];
+			
 			var coordinatePool = wards[polygon.indexID].Polygon[0].outerBoundaryIs[0].coordinates;
 			var numOfCoordinates = coordinatePool.length;
 			for (coordinateIterator = 0; coordinateIterator < numOfCoordinates; coordinateIterator++) {
@@ -375,7 +389,34 @@
 				points.push([coordinatePool[coordinateIterator].lat, coordinatePool[coordinateIterator].lng]);
 
 			}
+			//
+			/*
+			var ind = polygon.indexID;
+			var gap = ind;
+			if(ind<3){
+				gap = ind-2;
+				if(ind<2){
+					gap = ind-1;
+				}
+			}else{
+				gap = ind-3
+			}
+			
+			for (let index = gap; index < gap+6; index++) {
+				var coordinatePool = wards[index].Polygon[0].outerBoundaryIs[0].coordinates;
+				var numOfCoordinates = coordinatePool.length;
+				for (coordinateIterator = 0; coordinateIterator < numOfCoordinates; coordinateIterator++) {
 
+					latCords.push(coordinatePool[coordinateIterator].lat);
+					lngCords.push(coordinatePool[coordinateIterator].lng);
+
+					points.push([coordinatePool[coordinateIterator].lat, coordinatePool[coordinateIterator].lng]);
+
+				}
+				
+			}
+			*/
+			//
 			var encoded = createEncodings(points);
 			//console.log(encoded);
 
@@ -387,10 +428,12 @@
 
 			var centerLat = minLat + ((maxLat - minLat) / 2);
 			var centerLng = minLng + ((maxLng - minLng) / 2);
+			centerCords.set(centerLat, centerLng);
+
 			console.log(centerLat + " " + centerLng);
 
 
-			var groundTexture = loader.load('http://maps.googleapis.com/maps/api/staticmap?center=' + centerLat + ',' + centerLng + '&zoom=14.5&size=512x512&maptype=roadmap&sensor=false&path=color:red|weight:2|fillcolor:white|enc:' + encoded + '&key=AIzaSyCdWv25tk8tkWF15i20yBvik8pCJHUF2HI');
+			var groundTexture = loader.load('http://maps.googleapis.com/maps/api/staticmap?center=' + centerLat + ',' + centerLng + '&zoom='+ZOOM+'&size='+MAP_SIZE+'x'+MAP_SIZE+'&maptype=roadmap&sensor=false&path=color:red|weight:2|fillcolor:white|enc:' + encoded + '&key=AIzaSyCdWv25tk8tkWF15i20yBvik8pCJHUF2HI');
 
 
 			groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
@@ -398,17 +441,14 @@
 			groundTexture.anisotropy = 16;
 
 			var groundMaterial = new THREE.MeshLambertMaterial({ map: groundTexture });
-
-			staticMap = new THREE.Mesh(new THREE.PlaneBufferGeometry(2000, 2000), groundMaterial);
+			
+			staticMap = new THREE.Mesh(new THREE.PlaneBufferGeometry(PLANE_SIZE, PLANE_SIZE), groundMaterial); //2000,2000
 			staticMap.position.y = - 250;
 			staticMap.rotation.x = - Math.PI / 2;
 			staticMap.receiveShadow = true;
 			staticMapGroup.add(staticMap);
 			scene.add(staticMapGroup);
 			isCasaroul = true;
-			//load human avatar
-			//loadAvatar(scene,dataset.length*ratio);
-			console.log("Scene initialization completed!")
 		}
 		function initMap() {
 			var mapProp = {
@@ -441,7 +481,7 @@
 				afterParse: function (doc) { // callback after parse
 					wards = [];
 					for (var i = 0; i < doc[0].placemarks.length; i++) {
-
+						doc[0].placemarks[i]["indexID"] = i;
 						wards.push(doc[0].placemarks[i]);
 
 
@@ -561,7 +601,7 @@
 			//add marker cone to staticMapGroup
 			var geometry = new THREE.ConeGeometry(40, 550, 32);
 			var material = new THREE.MeshBasicMaterial({ color: 0XFF0000 });
-			var cone = new THREE.Mesh(geometry, material);
+			cone = new THREE.Mesh(geometry, material);
 			cone.position.y = -100;
 			cone.scale.y = 0.6;
 			staticMapGroup.add(cone);
@@ -580,6 +620,11 @@
 		var mouseDragCount = 0;
 		window.addEventListener('resize', onWindowResize, false);
 		window.addEventListener('mouseup', onMouseUp, false);
+		window.addEventListener('mousedown', onMouseDown, false);
+		window.onmousemove = onMouseMove; //addEventListener('onmousemove', onMouseMove, false);
+		
+
+		
 
 		function onWindowResize() {
 			camera.aspect = window.innerWidth / window.innerHeight;
@@ -602,6 +647,8 @@
 				dynamicMapRenderer.render(scene, camera);
 			} else if (isModalDragging) {
 				controls.enabled = false;
+			} else if(isConeDragging) {
+				controls.enabled = false;
 			} else {
 
 				if (isCasaroul && isCarouselSelected) {
@@ -620,10 +667,146 @@
 			canvasRenderer.render(scene, camera);
 		}
 
+
+		var isConeDragging = false;
+		function onMouseMove(event) {
+			//console.log("Moving");
+			dragCone(event);
+		}
+
+		function onMouseDown(event) {
+			event.preventDefault();
+			startDragCone(event);
+		}
+		
+		function checkMouseIntersect(obj, mouseEvent){
+			var raycaster = new THREE.Raycaster();
+			var mouse = new THREE.Vector2();
+			var intersects;
+			mouse.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1;
+			mouse.y = -(mouseEvent.clientY / window.innerHeight) * 2 + 1;
+			raycaster.setFromCamera(mouse, camera);
+
+			var intersects = raycaster.intersectObjects([obj], true);
+			if(intersects.length > 0){
+				return intersects[0];
+			}
+			return false;
+		}
+		function startDragCone(mouseEvent){
+			isConeDragging = false;
+			if(checkMouseIntersect(cone, mouseEvent)){
+				isConeDragging = true;
+				controls.saveState(); // save the state
+			}
+		}
+		function dragCone(mouseEvent){
+			if(isConeDragging){
+				// check if mouse hits the static plane. if so place cone to the mouse position on plane
+				var intersect = checkMouseIntersect(staticMap, mouseEvent);
+				
+				if(intersect){
+					cone.position.set(intersect.point.x, cone.position.y, intersect.point.z);
+					var ward = getWardOnConePosition();
+					if(ward != null){
+						updateConeLabel(ward.name);
+					}
+					
+				}
+			}
+		}
+		function endDragCone(mouseEvent){
+			placeCone(mouseEvent);
+			isConeDragging = false;
+		}
+		function placeCone(mouseEvent){
+			if(isConeDragging){
+				
+				var ward = getWardOnConePosition();
+				if(ward != null) {
+					loadDataset(ward, changeWard);
+				}
+				
+				updateConeLabel("");
+				cone.position.set(0, cone.position.y, 0);
+				isConeDragging = false;
+				controls.reset();
+			}		
+		}
+		function updateConeLabel(msg){
+			var container=null;
+			if(cone.children.length>0){
+				container = cone.children[0];
+				container.children[0].element.innerHTML=msg;
+			}else{
+				container = new THREE.Group();
+
+				var moonDiv = document.createElement('div');
+				moonDiv.className = 'label';
+				moonDiv.textContent = msg;
+				moonDiv.style.marginTop = '-1em';
+				var moonLabel = new THREE.CSS2DObject(moonDiv);
+				moonLabel.position.set(cone.position.x, cone.position.y+100, cone.position.z);
+
+				container.add(moonLabel);
+				cone.add(container);
+			}
+			
+            
+		}
+		function getWardOnConePosition(){
+			var config = {
+					lat: centerCords.x, // center lat
+					lng: centerCords.y, // center lng
+					zoom: ZOOM,
+					size: {
+						x: MAP_SIZE,
+						y: MAP_SIZE,
+					}
+				};
+				
+				var vector = new THREE.Vector3().copy( cone.position );
+				
+				staticMap.worldToLocal( vector );
+				
+				var tVector = transformPlaneToMap(vector.x, vector.y);
+
+				console.log( 'local point: ', tVector );
+				
+				var coordinate = getCoordinate(tVector.x,tVector.y,config);
+				
+				console.log("latlng: ", coordinate);
+				
+				
+				// check to which ward the coordinate belong to
+				var ward;
+				for(var i=0; i<wards.length; i++){
+					ward =  wards[i];
+
+					if(google.maps.geometry.poly.containsLocation(coordinate, ward.polygon)){
+						return ward;
+					}
+				}
+				return null;
+		}
+		function changeWard(polygon) {
+			switchScene(polygon);
+			dataVisualizer.updateDataset(dataset);
+		}
+		function transformPlaneToMap(x,y){
+			var halfMap = (MAP_SIZE/2);
+			var halfPlane = (PLANE_SIZE/2)
+			var scaleRatio = halfMap/halfPlane;
+
+			return new THREE.Vector2(x*scaleRatio+halfMap, halfMap-y*scaleRatio); 
+		}
+
 		function onMouseUp(event) {
 
 			event.preventDefault();
 			isModalDragging = false; // if this is true, we should make it false anyway
+			endDragCone(event);
+
 			if (mouseDragCount < 5) {
 
 				var raycaster = new THREE.Raycaster();

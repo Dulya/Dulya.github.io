@@ -4,6 +4,15 @@ function DataVisualizer(dataset, caseVisualizer){
     this.dataset = dataset;
     this.caseVisualizer = caseVisualizer;
     this.chart = null;
+    this.history = {};
+    /*
+    // sample history structure
+    {
+        path: null,
+        mainDimension:null,
+        xDimensions:null
+    }
+    */
 
     this.close_btn = document.getElementById('close_btn'); 
     window.onclick = function(event) {
@@ -12,6 +21,14 @@ function DataVisualizer(dataset, caseVisualizer){
             this.hide();
         }
     }.bind(this);
+}
+
+DataVisualizer.prototype.updateDataset = function(dataset){
+    this.dataset = dataset;
+    if(this.history && this.history ["path"]){
+        console.log("DATASET CHANGED!");
+        this.update(this.history.path, this.history.mainDimension, this.history.xDimensions);
+    }
 }
 
 DataVisualizer.prototype.update = function(path, mainDimension, xDimensions) {
@@ -213,6 +230,11 @@ DataVisualizer.prototype.update = function(path, mainDimension, xDimensions) {
     // update case visualizer
     console.log("Bar chart data", dataset);
     this.caseVisualizer.update(mainDimension, xDimensions, dataset);
+
+    // update history
+    this.history["path"] = path ;
+    this.history["mainDimension"] = mainDimension;
+    this.history["xDimensions"] = xDimensions;
 }
 DataVisualizer.prototype.show = function(){
     this.popup_window.style.display = "block";

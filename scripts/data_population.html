@@ -48,19 +48,23 @@
 
 		var ages = ["child", "adult", "elder"];
 		var genders = ["male", "female"];
-		var deaths = ["yes", "no"];
-		var infects = ["yes", "no"];
+		var deaths = ["death", "no-death"];
+		var periods=["2012-2014","2014-2016","2016-2018"];
+		var fogged=["fogged","not-fogged"];
 
-		var ss = "caseid, boundaryid, lat, lon, infected, death, gender, age\n";
-		for(var i=0; i<50; i++){
+		var ss = "caseid,boundaryid,lat,lon,death,gender,age,period,fogg\n";
+		for(var i=0; i<2500; i++){
 			var loc = getRandomLocation(6.91001447097832, 79.86658443677698, 1500);
 
 			var age = ages[getRandomInt(0,2)];
 			var gender = genders[getRandomInt(0,1)];
 			var death = deaths[getRandomInt(0,1)];
-			var infect = infects[getRandomInt(0,1)];
+			var period = periods[getRandomInt(0,2)];
+			var fogg = fogged[getRandomInt(0,1)];
 
-			ss += "case"+i+", 26, "+loc.latitude+", "+loc.longitude+", "+infect+", "+death+", "+gender+", "+age+"\n";
+
+
+			ss += "case"+i+", "+getRandomInt(0,53)+", "+loc.latitude+", "+loc.longitude+", "+death+", "+gender+", "+age+", "+period+", "+fogg+"\n";
 		}
 		console.log(ss);
 	</script>

@@ -28,7 +28,12 @@ function DataExplorer(scene, mainNode, dimensions, visualizer){
             new THREE.Vector3(-200,900,500),
             new THREE.Vector3(-200,900,500),
             new THREE.Vector3(200,900,500)
-        ]  // level4
+        ],  // level4
+        [
+            new THREE.Vector3(80,1100,820),
+            new THREE.Vector3(-200,900,500),
+            new THREE.Vector3(200,900,500)
+        ]  // level5
       ];
   }
 

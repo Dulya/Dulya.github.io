@@ -316,7 +316,7 @@
 		var centerCords = new THREE.Vector2();
 		var PLANE_SIZE = 2000;
 		var MAP_SIZE = 512;
-		var ZOOM = 14.5;
+		var ZOOM = 14;
 		
 		var webGLRenderer, dynamicMapRenderer, canvasRenderer, labelRenderer;
 		var controlls;
@@ -435,7 +435,7 @@
 
 			var groundTexture = loader.load('http://maps.googleapis.com/maps/api/staticmap?center=' + centerLat + ',' + centerLng + '&zoom='+ZOOM+'&size='+MAP_SIZE+'x'+MAP_SIZE+'&maptype=roadmap&sensor=false&path=color:red|weight:2|fillcolor:white|enc:' + encoded + '&key=AIzaSyCdWv25tk8tkWF15i20yBvik8pCJHUF2HI');
 
-
+			// console.log('http://maps.googleapis.com/maps/api/staticmap?center=' + centerLat + ',' + centerLng + '&zoom='+ZOOM+'&size='+MAP_SIZE+'x'+MAP_SIZE+'&maptype=roadmap&sensor=false&path=color:red|weight:2|fillcolor:white|enc:' + encoded + '&key=AIzaSyCdWv25tk8tkWF15i20yBvik8pCJHUF2HI');
 			groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
 			groundTexture.repeat.set(1, 1);
 			groundTexture.anisotropy = 16;
@@ -457,8 +457,16 @@
 			};
 
 			map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-			infowindow = new google.maps.InfoWindow();
-
+			infowindow = new google.maps.InfoWindow({
+				content: "VBD Research"
+			});
+			
+			var marker = new google.maps.Marker({
+				position: new google.maps.LatLng(6.9224, 79.8661),
+				map: map
+			});
+			marker.setVisible(false);
+			
 			addListenersOnWards = function (polygon) {
 				google.maps.event.addListener(polygon, 'click', function (event) {
 					console.log("BID", polygon.indexID);
@@ -472,6 +480,20 @@
 					labelRenderer.domElement.style.top = 0;
 					first_stage_container.appendChild( labelRenderer.domElement );
 					//document.body.appendChild( labelRenderer.domElement );
+				});
+				
+				google.maps.event.addListener(polygon, 'mouseover', function (event) {
+					console.log("on window");
+					var ind = polygon.indexID;
+					var ward = wards[ind];
+					
+					marker.setPosition(event.latLng);
+					infowindow.setContent(ward.name);
+					infowindow.open(map, marker);
+				});
+				google.maps.event.addListener(polygon, 'mouseout', function (event) {
+					// console.log("on window");
+					infowindow.close();
 				});
 			};
 
@@ -710,6 +732,8 @@
 					var ward = getWardOnConePosition();
 					if(ward != null){
 						updateConeLabel(ward.name);
+					}else{
+						updateConeLabel("");
 					}
 					
 				}
@@ -771,11 +795,11 @@
 				
 				var tVector = transformPlaneToMap(vector.x, vector.y);
 
-				console.log( 'local point: ', tVector );
+				// console.log( 'local point: ', tVector );
 				
 				var coordinate = getCoordinate(tVector.x,tVector.y,config);
 				
-				console.log("latlng: ", coordinate);
+				// console.log("latlng: ", coordinate);
 				
 				
 				// check to which ward the coordinate belong to

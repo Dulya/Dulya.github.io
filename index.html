@@ -73,10 +73,41 @@
 		/* The Close Button */
 
 		.close {
-			color: rgb(255, 255, 255);
+			color: rgb(255,255,255);
 			float: right;
 			font-size: 28px;
 			font-weight: bold;
+		}
+
+		.mymenu {
+			display: none;
+			/* Hidden by default */
+			position: fixed;
+			/* Stay in place */
+			z-index: 1;
+			
+			right: 0;
+			top: 0;
+			width: 250px;
+			/* Full width */
+			height: 100px;
+			/* Full height */
+			overflow: auto;
+			/* Enable scroll if needed */
+			background-color: rgb(0, 0, 0);
+			/* Fallback color */
+			background-color: rgba(0, 0, 0, 0);
+			/* Black w/ opacity */
+			color: white;
+			text-align: center;
+		}
+		.btnMenu{
+			text-decoration: none;
+		}
+		.btnMenu:hover {
+			text-decoration: none;
+			-webkit-filter: drop-shadow(12px 12px 7px rgba(255, 255, 255, 0.5));
+     		filter: drop-shadow(0px 0px 7px rgba(255, 255, 255, 0.5));
 		}
 	</style>
 </head>
@@ -150,13 +181,33 @@
 	<!--/////////////////////////////////// -->
 	<!-- <div id="myModal" class="modal"> -->
 
-
 	<div id="myModal" class="modal">
 		<span class="close" id="close_btn">&times;</span>
-		<canvas id="chart" width="450px" height="450px"></canvas>
+		<canvas id="chart" width="450px" height="400px"></canvas>
 	</div>
 	<!-- </div> -->
-
+	<div id="mymenu" class="mymenu">
+		<span id="maintitle" style="font-size:18px;margin-top: 10px;">Dengue Data for Test</span>
+		<br/>
+		<a href="index.html" class="btnMenu" title="Back to main map">
+			<img src="images/map_button.png" alt="Main Map" style="width:42px;height:42px;border:0">
+			Main Map
+		</a>
+	</div>
+	<script>
+		function showMenu(){
+			var menu = document.getElementById("mymenu");
+			menu.style.display = "block";
+		}
+		function hideMenu(){
+			var menu = document.getElementById("mymenu");
+			menu.style.display = "none";
+		}
+		function changeMenuTitle(txt){
+			var title = document.getElementById("maintitle");
+			title.innerHTML = txt;
+		}
+	</script>
 	<script>
 		$('.modal').resizable({
 			//alsoResize: ".modal-dialog",
@@ -319,7 +370,8 @@
 		var ZOOM = 14;
 		
 		var webGLRenderer, dynamicMapRenderer, canvasRenderer, labelRenderer;
-		var controlls;
+		var controls;
+		var iniZoom; //= controls.target.distanceTo( controls.object.position )
 		var isCarouselSelected = false;
 		var isCasaroul = false;
 		var parent;
@@ -342,16 +394,19 @@
 			x.style.display = "none";
 			camera.position.set(-2.198618297315242, 802.3112481029098, 2755.1754787778136);
 			controls.update();
-
+			iniZoom = controls.target.distanceTo( controls.object.position );
+			
 			// change number of carousel segments
+			/*
 			var gui = new dat.gui.GUI({
 				height: 5 * 32 - 1
 			});
 
 			var params = {
 				numOfParas: 4,
-			};
-
+			};*/
+			
+			
 			var metaphorDescriptor = new MetaphorDescriptor(0, null, Object.keys(subdimensions), [], undefined);
 			// console.log(metaphorDescriptor);
 			parent = CreateNewNode(metaphorDescriptor);
@@ -369,9 +424,20 @@
 			switchScene(polygon);
 			//load human avatar
 			//loadAvatar(scene,dataset.length*ratio);
-			console.log("Scene initialization completed!")
+			console.log("Scene initialization completed!");
+			showMenu();
 		}
 		function switchScene(polygon){
+			/*
+			var elms = document.getElementsByClassName("close-button");
+			console.log(elms);
+			elms[0].style.marginTop="20px";
+			elms[0].style.width="auto";
+			elms[0].style.fontSize=20;
+			elms[0].innerHTML = "Dengue Data for "+wards[polygon.indexID].name+"";
+			*/
+			changeMenuTitle("Dengue Data for "+wards[polygon.indexID].name+"");
+
 			var loader = new THREE.TextureLoader();
 			var coordinateIterator;
 
@@ -433,22 +499,34 @@
 			console.log(centerLat + " " + centerLng);
 
 
-			var groundTexture = loader.load('http://maps.googleapis.com/maps/api/staticmap?center=' + centerLat + ',' + centerLng + '&zoom='+ZOOM+'&size='+MAP_SIZE+'x'+MAP_SIZE+'&maptype=roadmap&sensor=false&path=color:red|weight:2|fillcolor:white|enc:' + encoded + '&key=AIzaSyCdWv25tk8tkWF15i20yBvik8pCJHUF2HI');
+			loader.load(
+					'http://maps.googleapis.com/maps/api/staticmap?center=' + centerLat + ',' + centerLng + '&zoom='+ZOOM+'&size='+MAP_SIZE+'x'+MAP_SIZE+'&maptype=roadmap&sensor=false&path=color:red|weight:2|fillcolor:white|enc:' + encoded + '&key=AIzaSyDCpWJYumkoTEUqxVbTngChkzDbJMgEoWM',
+					// onLoad callback
+					function ( groundTexture ) {
+						// console.log('http://maps.googleapis.com/maps/api/staticmap?center=' + centerLat + ',' + centerLng + '&zoom='+ZOOM+'&size='+MAP_SIZE+'x'+MAP_SIZE+'&maptype=roadmap&sensor=false&path=color:red|weight:2|fillcolor:white|enc:' + encoded + '&key=AIzaSyCdWv25tk8tkWF15i20yBvik8pCJHUF2HI');
+						groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+						groundTexture.repeat.set(1, 1);
+						groundTexture.anisotropy = 16;
 
-			// console.log('http://maps.googleapis.com/maps/api/staticmap?center=' + centerLat + ',' + centerLng + '&zoom='+ZOOM+'&size='+MAP_SIZE+'x'+MAP_SIZE+'&maptype=roadmap&sensor=false&path=color:red|weight:2|fillcolor:white|enc:' + encoded + '&key=AIzaSyCdWv25tk8tkWF15i20yBvik8pCJHUF2HI');
-			groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-			groundTexture.repeat.set(1, 1);
-			groundTexture.anisotropy = 16;
+						var groundMaterial = new THREE.MeshLambertMaterial({ map: groundTexture });
+						
+						staticMap = new THREE.Mesh(new THREE.PlaneBufferGeometry(PLANE_SIZE, PLANE_SIZE), groundMaterial); //2000,2000
+						staticMap.position.y = - 250;
+						staticMap.rotation.x = - Math.PI / 2;
+						staticMap.receiveShadow = true;
+						staticMapGroup.add(staticMap);
+						scene.add(staticMapGroup);
+						isCasaroul = true;
+					},
 
-			var groundMaterial = new THREE.MeshLambertMaterial({ map: groundTexture });
-			
-			staticMap = new THREE.Mesh(new THREE.PlaneBufferGeometry(PLANE_SIZE, PLANE_SIZE), groundMaterial); //2000,2000
-			staticMap.position.y = - 250;
-			staticMap.rotation.x = - Math.PI / 2;
-			staticMap.receiveShadow = true;
-			staticMapGroup.add(staticMap);
-			scene.add(staticMapGroup);
-			isCasaroul = true;
+					// onProgress callback currently not supported
+					undefined,
+
+					// onError callback
+					function ( err ) {
+						console.error( 'An error happened while loading' );
+					}
+				);
 		}
 		function initMap() {
 			var mapProp = {
@@ -699,6 +777,70 @@
 		function onMouseDown(event) {
 			event.preventDefault();
 			startDragCone(event);
+
+
+			if (mouseDragCount < 5) {
+
+				var raycaster = new THREE.Raycaster();
+				var mouse = new THREE.Vector2();
+				var intersects;
+				mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+				mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+				raycaster.setFromCamera(mouse, camera);
+
+				if (isCasaroul) {
+					var prevNumLevels = dataExplorer.levels.length;
+					// get all segments and buttons in the scene
+					var i = 0;
+					var children_segments = [];
+					var allNodes = dataExplorer.getAllNodes();
+
+					for (i = 0; i < allNodes.length; i++) {
+						children_segments = children_segments.concat(allNodes[i].metaphor.children);
+					}
+
+
+					var intersects = raycaster.intersectObjects(children_segments, true);
+					//console.log(allActiveNodes);											
+					var time = new Date() * 0.001;
+					for (i = 0; i < intersects.length; i++) {
+						if (intersects[i].object.geometry.type == 'ExtrudeGeometry' || intersects[i].object.geometry.type == "SphereGeometry") {
+							isSegmentClicked = true;
+
+							// When the user clicks on the button, open the modal
+
+							clickedSlice = intersects[i].object;
+
+							clickedSlice.select(dataExplorer);
+							/*
+							if(clickedSlice.getType() == "segment"){
+								//clickedDimension = clickedSlice.getDimension();
+								clickedSlice.select(dataExplorer);
+							}else if(clickedSlice.getType() == "middle_button"){
+								clickedSlice.select(dataExplorer);
+							}*/
+
+
+							break;
+						}
+					}
+					/*
+					var curNumLevels = dataExplorer.levels.length;
+					if(curNumLevels>prevNumLevels && curNumLevels>3){
+						var lev = curNumLevels-1;
+						var zooms = [0,0,0,1.36*iniZoom,1.5*iniZoom, 1.7*iniZoom];
+
+						var curZoom = controls.target.distanceTo( controls.object.position );
+						
+						if (curZoom < zooms[lev]){
+							controls.zoomOut(zooms[lev]);
+							controls.update();
+						}
+						
+					}*/
+				}
+			}
+			mouseDragCount = 0;
 		}
 		
 		function checkMouseIntersect(obj, mouseEvent){
@@ -831,62 +973,13 @@
 			isModalDragging = false; // if this is true, we should make it false anyway
 			endDragCone(event);
 
-			if (mouseDragCount < 5) {
-
-				var raycaster = new THREE.Raycaster();
-				var mouse = new THREE.Vector2();
-				var intersects;
-				mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-				mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-				raycaster.setFromCamera(mouse, camera);
-
-				if (isCasaroul) {
-
-					// get all segments and buttons in the scene
-					var i = 0;
-					var children_segments = [];
-					var allNodes = dataExplorer.getAllNodes();
-
-					for (i = 0; i < allNodes.length; i++) {
-						children_segments = children_segments.concat(allNodes[i].metaphor.children);
-					}
-
-
-					var intersects = raycaster.intersectObjects(children_segments, true);
-					//console.log(allActiveNodes);											
-					var time = new Date() * 0.001;
-					for (i = 0; i < intersects.length; i++) {
-						if (intersects[i].object.geometry.type == 'ExtrudeGeometry' || intersects[i].object.geometry.type == "SphereGeometry") {
-							isSegmentClicked = true;
-
-							// When the user clicks on the button, open the modal
-
-							clickedSlice = intersects[i].object;
-
-							clickedSlice.select(dataExplorer);
-							/*
-							if(clickedSlice.getType() == "segment"){
-								//clickedDimension = clickedSlice.getDimension();
-								clickedSlice.select(dataExplorer);
-							}else if(clickedSlice.getType() == "middle_button"){
-								clickedSlice.select(dataExplorer);
-							}*/
-
-
-							break;
-						}
-					}
-				}
-			}
-			mouseDragCount = 0;
-
 		}
 
 	</script>
 
 
 
-	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDhqzJW23I_VOzFj8sTvmf1IHV6InOWamk&callback=initMap"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDCpWJYumkoTEUqxVbTngChkzDbJMgEoWM&callback=initMap"></script>
 </body>
 
 </html>

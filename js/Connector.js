@@ -1,7 +1,7 @@
 
 
 function createConnector(source,target){
-    var material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+    var material = new THREE.LineBasicMaterial( { color: 0xffffff } );
     geometry = new THREE.Geometry();
     var point = source.getinsidepoint();
     geometry.vertices.push(source.localToWorld(new THREE.Vector3(point.x, point.y, point.z)) );

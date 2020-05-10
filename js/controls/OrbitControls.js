@@ -287,7 +287,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 		return Math.pow( 0.95, scope.zoomSpeed );
 
 	}
-
+	this.zoomScale = getZoomScale;
 	function rotateLeft( angle ) {
 
 		sphericalDelta.theta -= angle;
@@ -422,7 +422,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 		}
 
 	}
-
+	this.zoomIn = dollyIn;
+	this.zoomOut = dollyOut;
 	//
 	// event callbacks - update the object state
 	//

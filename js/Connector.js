@@ -1,4 +1,6 @@
-
+/**
+* Author: Dulya Murage
+*/
 
 function createConnector(source,target){
     var material = new THREE.LineBasicMaterial( { color: 0xffffff } );

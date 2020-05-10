@@ -1,3 +1,6 @@
+/**
+* Author: Dulya Murage
+*/
 function createCarousel(node, hasMiddle) {
     var parent = new THREE.Group();
     parent.userData.node = node;

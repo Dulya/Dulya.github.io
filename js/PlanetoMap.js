@@ -1,3 +1,6 @@
+/**
+* Author: Dulya Murage
+*/
 function getCoordinate(x, y, config) {
     // returns cordinates to a given x,y inside a plane containing google static map
     /*

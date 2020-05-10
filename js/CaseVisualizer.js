@@ -1,3 +1,6 @@
+/**
+* Author: Dulya Murage
+*/
 function CaseVisualizer(scene, subdimensions) {
     this.scene = scene;
     this.dimensions = subdimensions;

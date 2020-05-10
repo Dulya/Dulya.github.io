@@ -1,4 +1,6 @@
-
+/**
+* Author: Dulya Murage
+*/
 function DataVisualizer(dataset, caseVisualizer){
     this.popup_window = document.getElementById('myModal');
     this.dataset = dataset;

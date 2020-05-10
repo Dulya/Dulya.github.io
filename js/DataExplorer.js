@@ -1,3 +1,6 @@
+/**
+* Author: Dulya Murage
+*/
 function DataExplorer(scene, mainNode, dimensions, visualizer){
     this.scene = scene;
     this.mainNode = mainNode;
